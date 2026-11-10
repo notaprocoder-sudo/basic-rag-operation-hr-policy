@@ -61,16 +61,26 @@ def vector_storing(chunks):
 
 def rag_resp():
 
+    # Perform document operations
     document = load_documents(doc_path="data")
     chunks = doc_chunking(document)
     retriever = vector_storing(chunks)
+
+    # Set the model to gpt-4o-mini
     model=ChatOpenAI(model="gpt-4o-mini")
 
+    # Retrieval section
     while True:
+        # Input the User query
         query = input("Enter your query: ")
+
+        # If user types quit, exit the program
         if not query == "quit":
+
+            # Retrieve the chunks by similarity
             answer = retriever.invoke(query)
 
+            # Prompt for the LLM to use the context chunks to generate a response
             combined_input = f""" Based on the following documents, please answer this question {query}
 
             Documents:
@@ -86,11 +96,15 @@ def rag_resp():
                 HumanMessage(content=combined_input)
             ]
 
+            # Generate the model response
             response = model.invoke(messages)
+
+            # Print the content of response
             print(f"RAG Agent Response: \n {response.content}")
 
             
         else:
+            # Break and exit program
             break
 
 if __name__ == "__main__":
